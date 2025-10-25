@@ -142,7 +142,7 @@ export default function Auth() {
                       <Input
                         id="fullName"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="Enter your name"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
@@ -163,7 +163,7 @@ export default function Auth() {
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="Enter your mobile number"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
@@ -206,7 +206,7 @@ export default function Auth() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="Enter your email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
