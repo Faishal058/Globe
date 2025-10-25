@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { X, Mail, Lock, User, Phone } from "lucide-react";
+import { X, Mail, Lock } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { authService } from "@/services/auth";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -16,12 +17,11 @@ export default function Auth() {
     (searchParams.get("mode") as "login" | "signup") || "login"
   );
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const modeParam = searchParams.get("mode");
@@ -30,39 +30,54 @@ export default function Auth() {
     }
   }, [searchParams]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (mode === "signup") {
-      if (!formData.name || !formData.phone || !formData.email || !formData.password) {
-        toast.error("Please fill in all fields");
-        return;
+    try {
+      if (mode === "signup") {
+        if (!formData.email || !formData.password) {
+          toast.error("Please fill in all fields");
+          setIsLoading(false);
+          return;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          toast.error("Passwords do not match");
+          setIsLoading(false);
+          return;
+        }
+        if (formData.password.length < 6) {
+          toast.error("Password must be at least 6 characters");
+          setIsLoading(false);
+          return;
+        }
+
+        await authService.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        toast.success("Account created successfully!");
+        navigate("/");
+      } else {
+        if (!formData.email || !formData.password) {
+          toast.error("Please fill in all fields");
+          setIsLoading(false);
+          return;
+        }
+
+        await authService.signIn({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        toast.success("Welcome back!");
+        navigate("/");
       }
-      if (formData.password !== formData.confirmPassword) {
-        toast.error("Passwords do not match");
-        return;
-      }
-      if (formData.password.length < 6) {
-        toast.error("Password must be at least 6 characters");
-        return;
-      }
-      
-      // Store mock auth state
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userName", formData.name);
-      toast.success("Account created successfully!");
-      navigate("/");
-    } else {
-      if (!formData.email || !formData.password) {
-        toast.error("Please fill in all fields");
-        return;
-      }
-      
-      // Mock login
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userName", formData.email.split("@")[0]);
-      toast.success("Welcome back!");
-      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,56 +121,10 @@ export default function Auth() {
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {mode === "signup" && (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <Label htmlFor="name" className="text-foreground mb-2 block">
-                      Full Name
-                    </Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
-                      />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.25 }}
-                  >
-                    <Label htmlFor="phone" className="text-foreground mb-2 block">
-                      Phone Number
-                    </Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
-                      />
-                    </div>
-                  </motion.div>
-                </>
-              )}
-
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: mode === "signup" ? 0.3 : 0.2 }}
+                transition={{ delay: 0.2 }}
               >
                 <Label htmlFor="email" className="text-foreground mb-2 block">
                   Email
@@ -176,7 +145,7 @@ export default function Auth() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: mode === "signup" ? 0.35 : 0.25 }}
+                transition={{ delay: 0.25 }}
               >
                 <Label htmlFor="password" className="text-foreground mb-2 block">
                   Password
@@ -198,7 +167,7 @@ export default function Auth() {
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.3 }}
                 >
                   <Label htmlFor="confirmPassword" className="text-foreground mb-2 block">
                     Confirm Password
@@ -222,13 +191,14 @@ export default function Auth() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: mode === "signup" ? 0.45 : 0.3 }}
+                transition={{ delay: 0.35 }}
               >
                 <Button
                   type="submit"
-                  className="w-full py-6 text-lg bg-gradient-to-r from-cyan-500 to-violet-500 hover:from-cyan-600 hover:to-violet-600 text-white shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+                  disabled={isLoading}
+                  className="w-full py-6 text-lg bg-gradient-to-r from-cyan-500 to-violet-500 hover:from-cyan-600 hover:to-violet-600 text-white shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {mode === "login" ? "Login" : "Create Account"} →
+                  {isLoading ? "Please wait..." : mode === "login" ? "Login" : "Create Account"} →
                 </Button>
               </motion.div>
             </form>
@@ -236,7 +206,7 @@ export default function Auth() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: mode === "signup" ? 0.5 : 0.35 }}
+              transition={{ delay: 0.4 }}
               className="mt-6 text-center"
             >
               <p className="text-muted-foreground">
