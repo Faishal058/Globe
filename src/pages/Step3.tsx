@@ -18,7 +18,7 @@ interface Place {
 }
 
 const ALL_PLACES_DATA: Place[] = [
-  { "city": "Andaman", "place_name": "Radhanagar Beach", "category": "Beaches 🏖️", "description": "Famous for its sunset views and soft white sand on Havelock Island.", "image": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Radhanagar_Beach.jpg", "rating": 4.9 },
+  { "city": "Andaman", "place_name": "Radhanagar Beach", "category": "Beaches 🏖️", "description": "Famous for its sunset views and soft white sand on Havelock Island.", "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Radhanagar_Beach%2C_Havelock_Island%2C_Andaman_vrvbaan042k24_%2818%29.jpg/640px-Radhanagar_Beach%2C_Havelock_Island%2C_Andaman_vrvbaan042k24_%2818%29.jpg", "rating": 4.9 },
   { "city": "Andaman", "place_name": "Elephant Beach", "category": "Beaches 🏖️", "description": "Adventure hotspot known for snorkeling and coral reefs.", "image": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Elephant_Beach_Havelock.jpg", "rating": 4.7 },
   { "city": "Andaman", "place_name": "Cellular Jail", "category": "Historical 🏰", "description": "Iconic colonial prison and Indian freedom struggle site.", "image": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Cellular_Jail_Port_Blair.jpg", "rating": 4.8 },
   { "city": "Andaman", "place_name": "Ross Island", "category": "Islands 🏝️", "description": "Historical island with British ruins and peacocks.", "image": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Ross_Island_Andaman.jpg", "rating": 4.8 },
