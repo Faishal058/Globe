@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { X, Mail, Lock } from "lucide-react";
+import { X, Mail, Lock, User, Phone, Calendar } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
@@ -17,6 +17,9 @@ export default function Auth() {
     (searchParams.get("mode") as "login" | "signup") || "login"
   );
   const [formData, setFormData] = useState({
+    fullName: "",
+    phone: "",
+    dateOfBirth: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -36,7 +39,7 @@ export default function Auth() {
 
     try {
       if (mode === "signup") {
-        if (!formData.email || !formData.password) {
+        if (!formData.fullName || !formData.phone || !formData.dateOfBirth || !formData.email || !formData.password) {
           toast.error("Please fill in all fields");
           setIsLoading(false);
           return;
@@ -55,6 +58,9 @@ export default function Auth() {
         await authService.signUp({
           email: formData.email,
           password: formData.password,
+          fullName: formData.fullName,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
         });
 
         toast.success("Account created successfully!");
@@ -121,10 +127,76 @@ export default function Auth() {
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {mode === "signup" && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Label htmlFor="fullName" className="text-foreground mb-2 block">
+                      Full Name
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="fullName"
+                        type="text"
+                        placeholder="John Doe"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.25 }}
+                  >
+                    <Label htmlFor="phone" className="text-foreground mb-2 block">
+                      Mobile Number
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Label htmlFor="dateOfBirth" className="text-foreground mb-2 block">
+                      Date of Birth
+                    </Label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                        className="pl-10 glass border-white/20 focus:border-cyan-400 focus:ring-cyan-400/50 transition-all"
+                      />
+                    </div>
+                  </motion.div>
+                </>
+              )}
+
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: mode === "signup" ? 0.35 : 0.2 }}
               >
                 <Label htmlFor="email" className="text-foreground mb-2 block">
                   Email
@@ -145,7 +217,7 @@ export default function Auth() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.25 }}
+                transition={{ delay: mode === "signup" ? 0.4 : 0.25 }}
               >
                 <Label htmlFor="password" className="text-foreground mb-2 block">
                   Password
@@ -167,7 +239,7 @@ export default function Auth() {
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ delay: 0.45 }}
                 >
                   <Label htmlFor="confirmPassword" className="text-foreground mb-2 block">
                     Confirm Password
@@ -191,7 +263,7 @@ export default function Auth() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
+                transition={{ delay: mode === "signup" ? 0.5 : 0.3 }}
               >
                 <Button
                   type="submit"
@@ -206,7 +278,7 @@ export default function Auth() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: mode === "signup" ? 0.55 : 0.35 }}
               className="mt-6 text-center"
             >
               <p className="text-muted-foreground">

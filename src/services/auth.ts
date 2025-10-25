@@ -3,6 +3,9 @@ import { supabase } from '@/lib/supabase';
 export interface SignUpData {
   email: string;
   password: string;
+  fullName: string;
+  phone: string;
+  dateOfBirth: string;
 }
 
 export interface SignInData {
@@ -11,13 +14,27 @@ export interface SignInData {
 }
 
 export const authService = {
-  async signUp({ email, password }: SignUpData) {
+  async signUp({ email, password, fullName, phone, dateOfBirth }: SignUpData) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) throw error;
+
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          phone: phone,
+          date_of_birth: dateOfBirth,
+        })
+        .eq('id', data.user.id);
+
+      if (profileError) throw profileError;
+    }
+
     return data;
   },
 
