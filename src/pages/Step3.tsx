@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { ArrowLeft, MapPin, Star, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Star, Check, Map } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TripMap } from "@/components/TripMap";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Place {
   city: string;
@@ -51,6 +53,7 @@ export default function Step3() {
   const [selectedPlaces, setSelectedPlaces] = useState<string[]>([]);
   const [matchedPlaces, setMatchedPlaces] = useState<Place[]>([]);
   const [otherPlaces, setOtherPlaces] = useState<Place[]>([]);
+  const [showMobileMap, setShowMobileMap] = useState(false);
 
   useEffect(() => {
     const isAuth = localStorage.getItem("isAuthenticated");
@@ -187,20 +190,31 @@ export default function Step3() {
             onClick={() => navigate("/step2")}
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <div className="flex gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400" />
-              <span className="text-sm text-muted-foreground hidden sm:inline">Step 1</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400" />
-              <span className="text-sm text-muted-foreground hidden sm:inline">Step 2</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-sm text-muted-foreground hidden sm:inline">Step 3</span>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="lg:hidden glass border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/10 text-cyan-400"
+              onClick={() => setShowMobileMap(true)}
+            >
+              <Map className="w-4 h-4 mr-2" />
+              Map
+            </Button>
+            <div className="hidden sm:flex gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-cyan-400" />
+                <span className="text-sm text-muted-foreground hidden sm:inline">Step 1</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-cyan-400" />
+                <span className="text-sm text-muted-foreground hidden sm:inline">Step 2</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-sm text-muted-foreground hidden sm:inline">Step 3</span>
+              </div>
             </div>
           </div>
         </div>
@@ -273,13 +287,17 @@ export default function Step3() {
 
           <div className="hidden lg:block">
             <div className="sticky top-24">
-              <GlassCard variant="strong" className="p-6 h-[600px] flex items-center justify-center border border-cyan-400/30">
-                <div className="text-center">
-                  <MapPin className="w-16 h-16 text-cyan-400 mx-auto mb-4" />
-                  <p className="text-lg text-muted-foreground">Map View</p>
-                  <p className="text-sm text-muted-foreground/60 mt-2">
-                    Interactive map coming soon
-                  </p>
+              <GlassCard variant="strong" className="p-4 h-[600px] border border-cyan-400/30 overflow-hidden">
+                <div className="flex items-center gap-2 mb-3">
+                  <Map className="w-5 h-5 text-cyan-400" />
+                  <h3 className="text-lg font-semibold text-foreground">Map View</h3>
+                </div>
+                <div className="h-[calc(100%-3rem)] rounded-lg overflow-hidden">
+                  <TripMap
+                    places={allPlaces}
+                    selectedPlaces={selectedPlaces}
+                    onPlaceClick={togglePlace}
+                  />
                 </div>
               </GlassCard>
             </div>
@@ -301,8 +319,11 @@ export default function Step3() {
               >
                 {allSelected && <Check className="w-4 h-4 text-white" />}
               </div>
-              <span>
+              <span className="hidden sm:inline">
                 Select all ({selectedPlaces.length}/{allPlaces.length} selected)
+              </span>
+              <span className="sm:hidden">
+                {selectedPlaces.length}/{allPlaces.length}
               </span>
             </button>
 
@@ -323,6 +344,24 @@ export default function Step3() {
           </div>
         </div>
       </div>
+
+      <Dialog open={showMobileMap} onOpenChange={setShowMobileMap}>
+        <DialogContent className="max-w-[95vw] max-h-[90vh] w-full h-full glass-strong border-cyan-400/30">
+          <DialogHeader>
+            <DialogTitle className="text-gradient-hero flex items-center gap-2">
+              <Map className="w-5 h-5 text-cyan-400" />
+              Map View
+            </DialogTitle>
+          </DialogHeader>
+          <div className="h-[calc(100%-4rem)] rounded-lg overflow-hidden">
+            <TripMap
+              places={allPlaces}
+              selectedPlaces={selectedPlaces}
+              onPlaceClick={togglePlace}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -123,17 +123,30 @@ All colors MUST be HSL.
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
   }
-  
+
   .text-gradient-hero {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-hero);
   }
-  
+
   .glow-cyan {
     box-shadow: 0 0 20px hsl(var(--cyan) / 0.3);
   }
-  
+
   .glow-violet {
     box-shadow: 0 0 20px hsl(var(--violet) / 0.3);
   }
+}
+
+.leaflet-container {
+  font-family: inherit;
+  z-index: 0;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply glass-strong rounded-lg;
+}
+
+.leaflet-popup-tip {
+  @apply glass-strong;
 }
